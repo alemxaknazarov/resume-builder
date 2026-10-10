@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.6);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.4);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.6);
+}
+
+/* Universal A4 Paper geometry for 1:1 Screen and Print Parity */
+.resume-paper {
+  width: 210mm !important;
+  min-height: 297mm !important;
+  box-sizing: border-box !important;
+  padding: 10mm 12mm !important;
+  margin: 0 auto;
+}
+
+/* Pixel-perfect Icon-to-Text Vertical Alignment for Resume & UI */
+.icon-link,
+.icon-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  vertical-align: middle !important;
+  white-space: nowrap !important;
+}
+
+.icon-link svg,
+.icon-badge svg {
+  flex-shrink: 0 !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
+  position: relative !important;
+  top: 0.5px !important; /* Optical baseline match for sans-serif */
+}
+
+.icon-link span,
+.icon-badge span,
+.icon-link a,
+.icon-badge a {
+  display: inline-flex !important;
+  align-items: center !important;
+  line-height: 1.25 !important;
+}
+
+/* Standalone Print rules */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+}
