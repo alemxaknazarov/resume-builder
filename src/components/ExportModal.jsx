@@ -1,21 +1,25 @@
 import React, { useState } from 'react';
 import { Download, Check, Printer, X, FileDown, Loader2 } from 'lucide-react';
-import html2pdf from 'html2pdf.js';
+import { downloadDirectPdf, printVectorPdf } from '../utils/pdfExport';
 
 export default function ExportModal({ isOpen, onClose, fullName, onPrint, resumeRef }) {
   const [isGenerating, setIsGenerating] = useState(false);
 
   if (!isOpen) return null;
 
-  // 1. High-DPI Vector Print dialog via react-to-print
+  // 1. High-DPI Vector Print dialog via isolated iframe
   const handleVectorPrint = () => {
     onClose();
     setTimeout(() => {
-      if (onPrint) onPrint();
+      if (resumeRef?.current) {
+        printVectorPdf(resumeRef.current, fullName);
+      } else if (onPrint) {
+        onPrint();
+      }
     }, 150);
   };
 
-  // 2. Direct one-click download using html2pdf.js engine
+  // 2. Direct one-click download using WYSIWYG html-to-image + jsPDF engine
   const handleDirectDownload = async () => {
     setIsGenerating(true);
     try {
@@ -23,37 +27,7 @@ export default function ExportModal({ isOpen, onClose, fullName, onPrint, resume
         handleVectorPrint();
         return;
       }
-
-      // Temporarily remove zoom scale to prevent shrink distortion during rasterization
-      const originalTransform = resumeRef.current.style.transform;
-      resumeRef.current.style.transform = 'none';
-
-      const fileName = `${fullName ? fullName.trim().replace(/\s+/g, '_') : 'Resume'}.pdf`;
-
-      const options = {
-        margin: [0, 0, 0, 0],
-        filename: fileName,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          letterRendering: true,
-          scrollY: 0,
-          scrollX: 0,
-          windowWidth: 794,
-        },
-        jsPDF: {
-          unit: 'mm',
-          format: 'a4',
-          orientation: 'portrait',
-        },
-        enableLinks: true,
-      };
-
-      await html2pdf().set(options).from(resumeRef.current).save();
-
-      // Restore zoom scale
-      resumeRef.current.style.transform = originalTransform;
+      await downloadDirectPdf(resumeRef.current, fullName);
       onClose();
     } catch (err) {
       console.error('Direct PDF error, falling back to print:', err);

@@ -55,53 +55,53 @@ export default function TechPro({ data }) {
         </div>
 
         {/* Technical Social Links Row */}
-        <div className="flex flex-wrap items-center gap-3 mt-3 pt-3 border-t border-slate-100 text-xs">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-3 pt-3 border-t border-slate-100" style={{ fontSize: '10.5px' }}>
           {personal.github && (
-            <a 
+            <a
               href={personal.github.startsWith('http') ? personal.github : `https://${personal.github}`}
-              target="_blank" 
+              target="_blank"
               rel="noopener noreferrer"
-              className="icon-link gap-1.5 font-mono font-medium hover:underline"
+              className="icon-link gap-1 font-mono font-medium hover:underline shrink-0"
               style={{ color: accent }}
             >
-              <GithubIcon className="w-3.5 h-3.5 shrink-0" />
-              <span>{personal.github.replace(/^https?:\/\//, '')}</span>
+              <GithubIcon className="w-3 h-3 shrink-0" />
+              <span>GitHub</span>
             </a>
           )}
           {personal.website && (
-            <a 
+            <a
               href={personal.website.startsWith('http') ? personal.website : `https://${personal.website}`}
-              target="_blank" 
+              target="_blank"
               rel="noopener noreferrer"
-              className="icon-link gap-1.5 font-mono font-medium hover:underline"
+              className="icon-link gap-1 font-mono font-medium hover:underline shrink-0"
               style={{ color: accent }}
             >
-              <Globe className="w-3.5 h-3.5 shrink-0" />
-              <span>{personal.website.replace(/^https?:\/\//, '')}</span>
+              <Globe className="w-3 h-3 shrink-0" />
+              <span>Portfolio</span>
             </a>
           )}
           {personal.linkedin && (
-            <a 
+            <a
               href={personal.linkedin.startsWith('http') ? personal.linkedin : `https://${personal.linkedin}`}
-              target="_blank" 
+              target="_blank"
               rel="noopener noreferrer"
-              className="icon-link gap-1.5 font-mono font-medium hover:underline"
+              className="icon-link gap-1 font-mono font-medium hover:underline shrink-0"
               style={{ color: accent }}
             >
-              <LinkedinIcon className="w-3.5 h-3.5 shrink-0" />
-              <span>{personal.linkedin.replace(/^https?:\/\//, '')}</span>
+              <LinkedinIcon className="w-3 h-3 shrink-0" />
+              <span>LinkedIn</span>
             </a>
           )}
           {personal.telegram && (
-            <a 
+            <a
               href={personal.telegram.startsWith('http') ? personal.telegram : `https://t.me/${personal.telegram.replace('@', '')}`}
-              target="_blank" 
+              target="_blank"
               rel="noopener noreferrer"
-              className="icon-link gap-1.5 font-mono font-medium hover:underline"
+              className="icon-link gap-1 font-mono font-medium hover:underline shrink-0"
               style={{ color: accent }}
             >
-              <TelegramIcon className="w-3.5 h-3.5 shrink-0" />
-              <span>{personal.telegram.replace(/^https?:\/\/t\.me\//, '@')}</span>
+              <TelegramIcon className="w-3 h-3 shrink-0" />
+              <span>Telegram</span>
             </a>
           )}
         </div>

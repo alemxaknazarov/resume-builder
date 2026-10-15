@@ -9,7 +9,7 @@ export default function ModernMinimal({ data }) {
   return (
     <div className="resume-paper bg-white text-slate-800 font-sans min-h-full transition-all">
       {/* HEADER */}
-      <header className="border-b pb-5 border-slate-200">
+      <header className="border-b pb-4 border-slate-200">
         <div className="flex justify-between items-start flex-wrap gap-4">
           <div>
             <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 mb-1">
@@ -21,79 +21,79 @@ export default function ModernMinimal({ data }) {
           </div>
         </div>
 
-        {/* Contact Links Bar */}
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mt-3 text-xs text-slate-600">
+        {/* Contact Links Bar — single row or clean wrap without clipping */}
+        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 mt-2 text-slate-600" style={{ fontSize: '10.5px' }}>
           {personal.email && (
-            <a 
+            <a
               href={`mailto:${personal.email}`}
-              className="icon-link gap-1.5 hover:text-slate-900 transition-colors"
-              title="Email yozish"
+              className="icon-link gap-1 hover:text-slate-900 transition-colors shrink-0"
+              title="Email"
             >
-              <Mail className="w-3.5 h-3.5 shrink-0 text-slate-400" />
+              <Mail className="w-3 h-3 shrink-0 text-slate-400" />
               <span>{personal.email}</span>
             </a>
           )}
           {personal.phone && (
-            <a 
+            <a
               href={`tel:${personal.phone.replace(/\s+/g, '')}`}
-              className="icon-link gap-1.5 hover:text-slate-900 transition-colors"
+              className="icon-link gap-1 hover:text-slate-900 transition-colors shrink-0"
             >
-              <Phone className="w-3.5 h-3.5 shrink-0 text-slate-400" />
+              <Phone className="w-3 h-3 shrink-0 text-slate-400" />
               <span>{personal.phone}</span>
             </a>
           )}
           {personal.location && (
-            <span className="icon-link gap-1.5">
-              <MapPin className="w-3.5 h-3.5 shrink-0 text-slate-400" />
+            <span className="icon-link gap-1 shrink-0">
+              <MapPin className="w-3 h-3 shrink-0 text-slate-400" />
               <span>{personal.location}</span>
             </span>
           )}
           {personal.website && (
-            <a 
+            <a
               href={personal.website.startsWith('http') ? personal.website : `https://${personal.website}`}
-              target="_blank" 
+              target="_blank"
               rel="noopener noreferrer"
-              className="icon-link gap-1.5 font-medium hover:underline"
+              className="icon-link gap-1 font-medium hover:underline shrink-0"
               style={{ color: accent }}
             >
-              <Globe className="w-3.5 h-3.5 shrink-0" />
-              <span>{personal.website.replace(/^https?:\/\/(www\.)?/, '')}</span>
+              <Globe className="w-3 h-3 shrink-0" />
+              <span>{personal.website.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}</span>
             </a>
           )}
           {personal.github && (
-            <a 
+            <a
               href={personal.github.startsWith('http') ? personal.github : `https://${personal.github}`}
-              target="_blank" 
+              target="_blank"
               rel="noopener noreferrer"
-              className="icon-link gap-1.5 font-medium hover:underline"
+              className="icon-link gap-1 font-medium hover:underline shrink-0"
               style={{ color: accent }}
             >
-              <GithubIcon className="w-3.5 h-3.5 shrink-0" />
-              <span>{personal.github.replace(/^https?:\/\/(www\.)?github\.com\/?/, '')}</span>
+              <GithubIcon className="w-3 h-3 shrink-0" />
+              <span>GitHub</span>
             </a>
           )}
           {personal.linkedin && (
-            <a 
+            <a
               href={personal.linkedin.startsWith('http') ? personal.linkedin : `https://${personal.linkedin}`}
-              target="_blank" 
+              target="_blank"
               rel="noopener noreferrer"
-              className="icon-link gap-1.5 font-medium hover:underline"
+              className="icon-link gap-1 font-medium hover:underline shrink-0"
               style={{ color: accent }}
             >
-              <LinkedinIcon className="w-3.5 h-3.5 shrink-0" />
-              <span>{personal.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.com\/in\/?/, '')}</span>
+              <LinkedinIcon className="w-3 h-3 shrink-0" />
+              <span>LinkedIn</span>
             </a>
           )}
           {personal.telegram && (
-            <a 
+            <a
               href={personal.telegram.startsWith('http') ? personal.telegram : `https://t.me/${personal.telegram.replace('@', '')}`}
-              target="_blank" 
+              target="_blank"
               rel="noopener noreferrer"
-              className="icon-link gap-1.5 font-medium hover:underline"
+              className="icon-link gap-1 font-medium hover:underline shrink-0"
               style={{ color: accent }}
             >
-              <TelegramIcon className="w-3.5 h-3.5 shrink-0" />
-              <span>{personal.telegram.replace(/^https?:\/\/t\.me\/?/, '@')}</span>
+              <TelegramIcon className="w-3 h-3 shrink-0" />
+              <span>Telegram</span>
             </a>
           )}
         </div>

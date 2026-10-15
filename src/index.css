@@ -29,17 +29,20 @@
   width: 210mm !important;
   min-height: 297mm !important;
   box-sizing: border-box !important;
-  padding: 10mm 12mm !important;
+  padding: 6mm 8mm !important;
   margin: 0 auto;
 }
 
-/* Pixel-perfect Icon-to-Text Vertical Alignment for Resume & UI */
+/* Bulletproof Icon + Text Same-Line & Baseline Alignment */
 .icon-link,
 .icon-badge {
   display: inline-flex !important;
   align-items: center !important;
+  justify-content: flex-start !important;
   vertical-align: middle !important;
   white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  line-height: 1 !important;
 }
 
 .icon-link svg,
@@ -47,17 +50,16 @@
   flex-shrink: 0 !important;
   display: inline-block !important;
   vertical-align: middle !important;
-  position: relative !important;
-  top: 0.5px !important; /* Optical baseline match for sans-serif */
 }
 
 .icon-link span,
 .icon-badge span,
 .icon-link a,
 .icon-badge a {
-  display: inline-flex !important;
-  align-items: center !important;
-  line-height: 1.25 !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
+  line-height: 1.1 !important;
+  white-space: nowrap !important;
 }
 
 /* Standalone Print rules */
@@ -65,5 +67,10 @@
   @page {
     size: A4 portrait;
     margin: 0;
+  }
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
   }
 }

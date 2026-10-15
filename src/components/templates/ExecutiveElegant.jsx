@@ -18,76 +18,76 @@ export default function ExecutiveElegant({ data }) {
         </p>
 
         {/* Centered contact strip */}
-        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 mt-3 text-xs font-sans text-slate-600">
+        <div className="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 mt-3 font-sans" style={{ fontSize: '10.5px', color: '#475569' }}>
           {personal.location && (
-            <span className="icon-link gap-1.5">
-              <MapPin className="w-3.5 h-3.5 shrink-0 text-slate-400" />
+            <span className="icon-link gap-1 shrink-0">
+              <MapPin className="w-3 h-3 shrink-0 text-slate-400" />
               <span>{personal.location}</span>
             </span>
           )}
           {personal.phone && (
-            <a 
-              href={`tel:${personal.phone.replace(/\s+/g, '')}`} 
-              className="icon-link gap-1.5 hover:text-slate-950"
+            <a
+              href={`tel:${personal.phone.replace(/\s+/g, '')}`}
+              className="icon-link gap-1 hover:text-slate-950 shrink-0"
             >
-              <Phone className="w-3.5 h-3.5 shrink-0 text-slate-400" />
+              <Phone className="w-3 h-3 shrink-0 text-slate-400" />
               <span>{personal.phone}</span>
             </a>
           )}
           {personal.email && (
-            <a 
+            <a
               href={`mailto:${personal.email}`}
-              className="icon-link gap-1.5 hover:text-slate-950"
+              className="icon-link gap-1 hover:text-slate-950 shrink-0"
             >
-              <Mail className="w-3.5 h-3.5 shrink-0 text-slate-400" />
+              <Mail className="w-3 h-3 shrink-0 text-slate-400" />
               <span>{personal.email}</span>
             </a>
           )}
           {personal.website && (
-            <a 
+            <a
               href={personal.website.startsWith('http') ? personal.website : `https://${personal.website}`}
-              target="_blank" 
+              target="_blank"
               rel="noopener noreferrer"
-              className="icon-link gap-1.5 hover:underline"
+              className="icon-link gap-1 hover:underline shrink-0"
               style={{ color: accent }}
             >
-              <Globe className="w-3.5 h-3.5 shrink-0" />
+              <Globe className="w-3 h-3 shrink-0" />
               <span>{personal.website.replace(/^https?:\/\//, '')}</span>
             </a>
           )}
           {personal.linkedin && (
-            <a 
+            <a
               href={personal.linkedin.startsWith('http') ? personal.linkedin : `https://${personal.linkedin}`}
-              target="_blank" 
+              target="_blank"
               rel="noopener noreferrer"
-              className="icon-link gap-1.5 hover:underline"
+              className="icon-link gap-1 hover:underline shrink-0"
               style={{ color: accent }}
             >
-              <LinkedinIcon className="w-3.5 h-3.5 shrink-0" />
+              <LinkedinIcon className="w-3 h-3 shrink-0" />
               <span>LinkedIn</span>
             </a>
           )}
           {personal.github && (
-            <a 
+            <a
               href={personal.github.startsWith('http') ? personal.github : `https://${personal.github}`}
-              target="_blank" 
+              target="_blank"
               rel="noopener noreferrer"
-              className="icon-link gap-1.5 hover:underline"
+              className="icon-link gap-1 hover:underline shrink-0"
               style={{ color: accent }}
             >
-              <GithubIcon className="w-3.5 h-3.5 shrink-0" />
+              <GithubIcon className="w-3 h-3 shrink-0" />
               <span>GitHub</span>
             </a>
           )}
           {personal.telegram && (
-            <a 
+            <a
               href={personal.telegram.startsWith('http') ? personal.telegram : `https://t.me/${personal.telegram.replace('@', '')}`}
-              target="_blank" 
+              target="_blank"
               rel="noopener noreferrer"
-              className="icon-link gap-1.5 hover:underline"
+              className="icon-link gap-1 hover:underline shrink-0"
               style={{ color: accent }}
             >
-              <TelegramIcon className="w-3.5 h-3.5 shrink-0" />
+              <TelegramIcon className="w-3 h-3 shrink-0" />
               <span>Telegram</span>
             </a>
           )}

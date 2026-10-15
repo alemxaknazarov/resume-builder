@@ -4,7 +4,7 @@ import FormPanel from './components/FormPanel';
 import PreviewPanel from './components/PreviewPanel';
 import ExportModal from './components/ExportModal';
 import { sampleResumeData, emptyResumeData } from './data/initialData';
-import { useReactToPrint } from 'react-to-print';
+import { printVectorPdf } from './utils/pdfExport';
 
 const STORAGE_KEY = 'proresume_builder_data_v1';
 
@@ -55,45 +55,12 @@ export default function App() {
     }
   };
 
-  // Industry-standard printing with react-to-print
-  const handlePrint = useReactToPrint({
-    contentRef: resumeRef,
-    documentTitle: `${resumeData.personal?.fullName ? resumeData.personal.fullName.trim().replace(/\s+/g, '_') : 'Resume'}_Resume`,
-    pageStyle: `
-      @page {
-        size: A4 portrait;
-        margin: 0;
-      }
-      *, *::before, *::after {
-        box-sizing: border-box;
-      }
-      html, body {
-        margin: 0 !important;
-        padding: 0 !important;
-        background: #ffffff !important;
-        color: #000000 !important;
-        width: 210mm !important;
-        min-height: 297mm !important;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-      }
-      .resume-paper {
-        width: 210mm !important;
-        min-height: 297mm !important;
-        margin: 0 auto !important;
-        padding: 10mm 12mm !important;
-        box-shadow: none !important;
-        border: none !important;
-        border-radius: 0 !important;
-        transform: none !important;
-        background: #ffffff !important;
-      }
-      .avoid-break {
-        break-inside: avoid !important;
-        page-break-inside: avoid !important;
-      }
-    `,
-  });
+  // High-precision isolated vector printing
+  const handlePrint = () => {
+    if (resumeRef.current) {
+      printVectorPdf(resumeRef.current, resumeData.personal?.fullName);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-950 text-slate-100">

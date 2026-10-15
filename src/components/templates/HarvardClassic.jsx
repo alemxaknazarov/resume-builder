@@ -17,7 +17,7 @@ export default function HarvardClassic({ data }) {
           </p>
         )}
 
-        {/* Dense Single-Line Contact Strip */}
+        {/* Dense Contact Strip */}
         <div className="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-xs text-slate-700 font-sans mt-2">
           {personal.location && <span>{personal.location}</span>}
           {personal.phone && (
@@ -68,6 +68,19 @@ export default function HarvardClassic({ data }) {
                 className="hover:underline font-medium text-slate-900"
               >
                 Portfolio/GitHub
+              </a>
+            </>
+          )}
+          {personal.telegram && (
+            <>
+              <span>•</span>
+              <a 
+                href={personal.telegram.startsWith('http') ? personal.telegram : `https://t.me/${personal.telegram.replace('@', '')}`} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="hover:underline font-medium text-slate-900"
+              >
+                Telegram
               </a>
             </>
           )}

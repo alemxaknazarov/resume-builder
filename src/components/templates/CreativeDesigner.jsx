@@ -10,61 +10,61 @@ export default function CreativeDesigner({ data }) {
     <div className="resume-paper bg-white text-slate-800 font-sans min-h-full">
       {/* CREATIVE TOP HERO */}
       <header className="relative pb-5 mb-5 border-b border-slate-200">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col gap-3">
           <div>
             <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold mb-2" style={{ backgroundColor: `${accent}15`, color: accent }}>
               <Sparkles className="w-3 h-3" />
               <span>{personal.jobTitle || "Dizayner / Mutaxassis"}</span>
             </div>
-            <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
+            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
               {personal.fullName || "Ism Familiya"}
             </h1>
           </div>
 
-          {/* Social Links Chips */}
-          <div className="flex flex-wrap items-center gap-2 text-xs">
+          {/* Social Links Chips — full width row, never wraps on A4 */}
+          <div className="flex flex-wrap items-center gap-1.5">
             {personal.website && (
-              <a 
+              <a
                 href={personal.website.startsWith('http') ? personal.website : `https://${personal.website}`}
-                target="_blank" 
+                target="_blank"
                 rel="noopener noreferrer"
-                className="px-3 py-1 rounded-full border border-slate-200 hover:border-slate-400 icon-link gap-1.5 transition-colors font-medium"
+                className="px-2.5 py-0.5 rounded-full border border-slate-200 icon-link gap-1 transition-colors font-medium text-[10.5px] shrink-0"
                 style={{ color: accent }}
               >
-                <Globe className="w-3.5 h-3.5 shrink-0" />
+                <Globe className="w-3 h-3 shrink-0" />
                 <span>Portfolio</span>
               </a>
             )}
             {personal.github && (
-              <a 
+              <a
                 href={personal.github.startsWith('http') ? personal.github : `https://${personal.github}`}
-                target="_blank" 
+                target="_blank"
                 rel="noopener noreferrer"
-                className="px-3 py-1 rounded-full border border-slate-200 hover:border-slate-400 icon-link gap-1.5 text-slate-700 transition-colors"
+                className="px-2.5 py-0.5 rounded-full border border-slate-200 icon-link gap-1 text-slate-700 transition-colors text-[10.5px] shrink-0"
               >
-                <GithubIcon className="w-3.5 h-3.5 shrink-0" />
+                <GithubIcon className="w-3 h-3 shrink-0" />
                 <span>GitHub / Dribbble</span>
               </a>
             )}
             {personal.linkedin && (
-              <a 
+              <a
                 href={personal.linkedin.startsWith('http') ? personal.linkedin : `https://${personal.linkedin}`}
-                target="_blank" 
+                target="_blank"
                 rel="noopener noreferrer"
-                className="px-3 py-1 rounded-full border border-slate-200 hover:border-slate-400 icon-link gap-1.5 text-slate-700 transition-colors"
+                className="px-2.5 py-0.5 rounded-full border border-slate-200 icon-link gap-1 text-slate-700 transition-colors text-[10.5px] shrink-0"
               >
-                <LinkedinIcon className="w-3.5 h-3.5 shrink-0" />
+                <LinkedinIcon className="w-3 h-3 shrink-0" />
                 <span>LinkedIn</span>
               </a>
             )}
             {personal.telegram && (
-              <a 
+              <a
                 href={personal.telegram.startsWith('http') ? personal.telegram : `https://t.me/${personal.telegram.replace('@', '')}`}
-                target="_blank" 
+                target="_blank"
                 rel="noopener noreferrer"
-                className="px-3 py-1 rounded-full border border-slate-200 hover:border-slate-400 icon-link gap-1.5 text-slate-700 transition-colors"
+                className="px-2.5 py-0.5 rounded-full border border-slate-200 icon-link gap-1 text-slate-700 transition-colors text-[10.5px] shrink-0"
               >
-                <TelegramIcon className="w-3.5 h-3.5 shrink-0" />
+                <TelegramIcon className="w-3 h-3 shrink-0" />
                 <span>Telegram</span>
               </a>
             )}
