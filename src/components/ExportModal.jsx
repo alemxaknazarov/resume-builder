@@ -38,8 +38,8 @@ export default function ExportModal({ isOpen, onClose, fullName, onPrint, resume
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm no-print">
-      <div className="bg-slate-900 border border-slate-750 w-full max-w-lg rounded-2xl p-6 shadow-2xl relative animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm no-print">
+      <div className="bg-slate-900 border border-slate-750 w-full max-w-lg rounded-2xl p-4 sm:p-6 shadow-2xl relative animate-in fade-in duration-200 max-h-[92vh] overflow-y-auto">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-lg transition-colors"

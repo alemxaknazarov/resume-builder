@@ -24,6 +24,15 @@
   background: rgba(148, 163, 184, 0.6);
 }
 
+/* Hide scrollbars for clean mobile swipeable menus */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 /* Universal A4 Paper geometry for 1:1 Screen and Print Parity */
 .resume-paper {
   width: 210mm !important;

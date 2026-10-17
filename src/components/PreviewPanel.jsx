@@ -25,7 +25,29 @@ const TEMPLATES = [
 ];
 
 export default function PreviewPanel({ data, onCustomizationChange, resumeRef }) {
-  const [zoom, setZoom] = useState(85);
+  const getAutoFitScale = () => {
+    if (typeof window === 'undefined') return 85;
+    const w = window.innerWidth;
+    if (w < 640) {
+      // Mobile screen width ~360px - 414px (with margin and padding)
+      const available = Math.max(260, w - 24);
+      return Math.min(65, Math.max(35, Math.floor((available / 794) * 100)));
+    }
+    if (w < 1024) {
+      // Tablet screen width
+      const available = Math.max(380, w - 48);
+      return Math.min(85, Math.max(50, Math.floor((available / 794) * 100)));
+    }
+    return 85;
+  };
+
+  const [zoom, setZoom] = useState(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+      return getAutoFitScale();
+    }
+    return 85;
+  });
+
   const activeTemplate = data.customization?.template || 'modern';
   const activeColor = data.customization?.accentColor || '#2563eb';
 
@@ -40,20 +62,21 @@ export default function PreviewPanel({ data, onCustomizationChange, resumeRef })
   return (
     <div className="flex flex-col h-full">
       {/* TOOLBAR CONTROLS (Hidden during print) */}
-      <div className="no-print bg-slate-800/90 border border-slate-700/80 rounded-xl p-3 mb-4 backdrop-blur shadow-sm space-y-3">
-        {/* Template Switcher */}
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2 flex-wrap">
+      <div className="no-print bg-slate-800/90 border border-slate-700/80 rounded-xl p-2.5 sm:p-3 mb-3 sm:mb-4 backdrop-blur shadow-sm space-y-2.5 sm:space-y-3">
+        {/* Top Controls Row */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-2.5 lg:gap-3">
+          {/* Template Switcher */}
+          <div className="flex items-center gap-1.5 sm:gap-2 w-full lg:w-auto overflow-hidden">
             <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5 shrink-0">
               <LayoutTemplate className="w-3.5 h-3.5 text-blue-400" />
-              Shablon:
+              <span className="hidden sm:inline">Shablon:</span>
             </span>
-            <div className="inline-flex bg-slate-900/90 p-1 rounded-lg border border-slate-750 gap-1 flex-wrap">
+            <div className="flex items-center bg-slate-900/90 p-1 rounded-lg border border-slate-750 gap-1 overflow-x-auto no-scrollbar w-full lg:w-auto">
               {TEMPLATES.map((tpl) => (
                 <button
                   key={tpl.id}
                   onClick={() => setTemplate(tpl.id)}
-                  className={`text-xs px-2.5 py-1.5 rounded-md font-medium transition-all ${
+                  className={`text-xs px-2.5 py-1.5 rounded-md font-medium whitespace-nowrap transition-all shrink-0 ${
                     activeTemplate === tpl.id
                       ? 'bg-blue-600 text-white shadow-sm'
                       : 'text-slate-400 hover:text-slate-200'
@@ -65,9 +88,10 @@ export default function PreviewPanel({ data, onCustomizationChange, resumeRef })
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          {/* Color Palettes and Zoom Controls */}
+          <div className="flex items-center justify-between lg:justify-end gap-2 sm:gap-3 w-full lg:w-auto shrink-0">
             {/* Color Palettes */}
-            <div className="flex items-center gap-1.5 bg-slate-900/90 p-1 rounded-lg border border-slate-750">
+            <div className="flex items-center gap-1.5 bg-slate-900/90 p-1 rounded-lg border border-slate-750 shrink-0">
               {ACCENT_COLORS.map((c) => (
                 <button
                   key={c.value}
@@ -82,9 +106,9 @@ export default function PreviewPanel({ data, onCustomizationChange, resumeRef })
             </div>
 
             {/* Zoom controls */}
-            <div className="flex items-center gap-1 bg-slate-900/90 p-1 rounded-lg border border-slate-750 text-slate-300">
+            <div className="flex items-center gap-1 bg-slate-900/90 p-1 rounded-lg border border-slate-750 text-slate-300 shrink-0">
               <button
-                onClick={() => setZoom((z) => Math.max(50, z - 10))}
+                onClick={() => setZoom((z) => Math.max(30, z - 10))}
                 className="p-1 hover:text-white rounded"
                 title="Kichraytirish"
               >
@@ -99,9 +123,9 @@ export default function PreviewPanel({ data, onCustomizationChange, resumeRef })
                 <ZoomIn className="w-3.5 h-3.5" />
               </button>
               <button
-                onClick={() => setZoom(85)}
+                onClick={() => setZoom(window.innerWidth < 1024 ? getAutoFitScale() : 85)}
                 className="p-1 hover:text-white rounded border-l border-slate-700 ml-0.5"
-                title="Asliga qaytarish (85%)"
+                title={window.innerWidth < 1024 ? "Ekranga moslash" : "Asliga qaytarish (85%)"}
               >
                 <RotateCcw className="w-3 h-3" />
               </button>
@@ -110,38 +134,47 @@ export default function PreviewPanel({ data, onCustomizationChange, resumeRef })
         </div>
 
         {/* Hyperlink Hint Banner */}
-        <div className="flex items-center justify-between text-[11px] bg-blue-950/40 border border-blue-800/40 px-3 py-1.5 rounded-lg text-blue-200">
+        <div className="flex items-center justify-between text-[11px] bg-blue-950/40 border border-blue-800/40 px-2.5 sm:px-3 py-1.5 rounded-lg text-blue-200">
           <div className="flex items-center gap-2">
             <Link2 className="w-3.5 h-3.5 text-blue-400 shrink-0" />
-            <span>
-              <strong>Interaktiv Havolalar:</strong> PDF ga eksport qilinganda barcha linklar (GitHub, Demo, Portfolio) to'liq bosiladigan va faol holatda saqlanadi.
+            <span className="text-[10px] sm:text-[11px] leading-tight">
+              <strong>Interaktiv Havolalar:</strong> PDF ga eksport qilinganda barcha linklar to'liq bosiladigan holatda saqlanadi.
             </span>
           </div>
-          <span className="text-[10px] bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded font-mono hidden md:inline">
+          <span className="text-[10px] bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded font-mono hidden md:inline shrink-0">
             A4 Standart
           </span>
         </div>
       </div>
 
       {/* PAPER CANVAS CONTAINER */}
-      <div className="flex-1 overflow-auto bg-slate-950/60 rounded-xl p-4 md:p-8 flex justify-center items-start border border-slate-800/80 shadow-inner print:bg-white print:border-none print:p-0 print:m-0 print:overflow-visible">
+      <div className="flex-1 overflow-auto bg-slate-950/60 rounded-xl p-2 sm:p-4 md:p-8 flex justify-center items-start border border-slate-800/80 shadow-inner print:bg-white print:border-none print:p-0 print:m-0 print:overflow-visible pb-20 lg:pb-8">
         <div 
-          id="resume-to-print"
-          ref={resumeRef}
-          className="print-container transition-transform origin-top shadow-2xl rounded-sm shrink-0 print:shadow-none print:border-none print:m-0 print:p-0"
+          className="relative transition-all duration-150 shrink-0"
           style={{ 
-            transform: `scale(${zoom / 100})`,
-            width: '210mm',
-            minWidth: '210mm',
-            maxWidth: '210mm',
-            minHeight: '297mm',
+            width: `${(210 * zoom) / 100}mm`,
+            height: `${(297 * zoom) / 100}mm`,
           }}
         >
-          {activeTemplate === 'modern' && <ModernMinimal data={data} />}
-          {activeTemplate === 'tech' && <TechPro data={data} />}
-          {activeTemplate === 'creative' && <CreativeDesigner data={data} />}
-          {activeTemplate === 'executive' && <ExecutiveElegant data={data} />}
-          {activeTemplate === 'harvard' && <HarvardClassic data={data} />}
+          <div 
+            id="resume-to-print"
+            ref={resumeRef}
+            className="print-container transition-transform origin-top-left shadow-2xl rounded-sm shrink-0 print:shadow-none print:border-none print:m-0 print:p-0 absolute top-0 left-0"
+            style={{ 
+              transform: `scale(${zoom / 100})`,
+              transformOrigin: 'top left',
+              width: '210mm',
+              minWidth: '210mm',
+              maxWidth: '210mm',
+              minHeight: '297mm',
+            }}
+          >
+            {activeTemplate === 'modern' && <ModernMinimal data={data} />}
+            {activeTemplate === 'tech' && <TechPro data={data} />}
+            {activeTemplate === 'creative' && <CreativeDesigner data={data} />}
+            {activeTemplate === 'executive' && <ExecutiveElegant data={data} />}
+            {activeTemplate === 'harvard' && <HarvardClassic data={data} />}
+          </div>
         </div>
       </div>
     </div>
