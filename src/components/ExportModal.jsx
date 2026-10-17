@@ -1,18 +1,38 @@
 import React, { useState } from 'react';
 import { Download, Check, Printer, X, FileDown, Loader2 } from 'lucide-react';
-import { downloadDirectPdf, printVectorPdf } from '../utils/pdfExport';
+import { 
+  downloadDirectPdf, 
+  printVectorPdf, 
+  downloadDirectObektivkaPdf, 
+  printObektivkaPdf 
+} from '../utils/pdfExport';
 
-export default function ExportModal({ isOpen, onClose, fullName, onPrint, resumeRef }) {
+export default function ExportModal({ 
+  isOpen, 
+  onClose, 
+  docType = 'resume',
+  fullName, 
+  resumeRef, 
+  obektivkaRef,
+  onPrint 
+}) {
   const [isGenerating, setIsGenerating] = useState(false);
 
   if (!isOpen) return null;
+
+  const isObektivka = docType === 'obektivka';
+  const targetRef = isObektivka ? obektivkaRef : resumeRef;
 
   // 1. High-DPI Vector Print dialog via isolated iframe
   const handleVectorPrint = () => {
     onClose();
     setTimeout(() => {
-      if (resumeRef?.current) {
-        printVectorPdf(resumeRef.current, fullName);
+      if (targetRef?.current) {
+        if (isObektivka) {
+          printObektivkaPdf(targetRef.current, fullName);
+        } else {
+          printVectorPdf(targetRef.current, fullName);
+        }
       } else if (onPrint) {
         onPrint();
       }
@@ -23,11 +43,16 @@ export default function ExportModal({ isOpen, onClose, fullName, onPrint, resume
   const handleDirectDownload = async () => {
     setIsGenerating(true);
     try {
-      if (!resumeRef?.current) {
+      if (!targetRef?.current) {
         handleVectorPrint();
         return;
       }
-      await downloadDirectPdf(resumeRef.current, fullName);
+
+      if (isObektivka) {
+        await downloadDirectObektivkaPdf(targetRef.current, fullName);
+      } else {
+        await downloadDirectPdf(targetRef.current, fullName);
+      }
       onClose();
     } catch (err) {
       console.error('Direct PDF error, falling back to print:', err);
@@ -52,14 +77,20 @@ export default function ExportModal({ isOpen, onClose, fullName, onPrint, resume
             <Download className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-white">PDF Yuklab Olish</h3>
-            <p className="text-xs text-slate-400">Siljishlarsiz, to'liq A4 formatda va ishlaydigan havolalar bilan</p>
+            <h3 className="text-lg font-bold text-white">
+              {isObektivka ? "Маълумотнома (Объективка) PDF" : "PDF Yuklab Olish"}
+            </h3>
+            <p className="text-xs text-slate-400">
+              {isObektivka 
+                ? "Ўзбекистон давлат хизмати андозасида 2 саҳифали расмий А4 шакл"
+                : "Siljishlarsiz, to'liq A4 formatda va ishlaydigan havolalar bilan"}
+            </p>
           </div>
         </div>
 
         {/* DUAL OPTIONS BOX */}
         <div className="space-y-3 mb-5">
-          {/* OPTION 1: Vector Print dialog (React-to-print) */}
+          {/* OPTION 1: Vector Print dialog */}
           <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 hover:border-emerald-500/50 transition-colors">
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -73,7 +104,9 @@ export default function ExportModal({ isOpen, onClose, fullName, onPrint, resume
                   </span>
                 </div>
                 <p className="text-xs text-slate-400">
-                  Brauzerning toza vektor dvigateli orqali: hech qanday siljish bo'lmaydi, harflar va chiziqlar kristall tiniq chiqadi.
+                  {isObektivka
+                    ? "Brauzerning toza vektor dvigateli orqali: 2 ta sahifa to'liq, jadvallar va fotosurat kristall tiniq chiqadi."
+                    : "Brauzerning toza vektor dvigateli orqali: hech qanday siljish bo'lmaydi, harflar va chiziqlar kristall tiniq chiqadi."}
                 </p>
               </div>
             </div>
@@ -97,7 +130,9 @@ export default function ExportModal({ isOpen, onClose, fullName, onPrint, resume
                   To'g'ridan-to'g'ri .pdf Yuklash (1-bosishda)
                 </span>
                 <p className="text-xs text-slate-400">
-                  Brauzer dialogisiz faylni darhol kompyuteringizga yuklab olish.
+                  {isObektivka
+                    ? "Brauzer dialogisiz 2 sahifali tayyor .pdf faylni darhol kompyuteringizga yuklab olish."
+                    : "Brauzer dialogisiz faylni darhol kompyuteringizga yuklab olish."}
                 </p>
               </div>
             </div>
@@ -125,7 +160,11 @@ export default function ExportModal({ isOpen, onClose, fullName, onPrint, resume
 
         <div className="text-[11px] text-slate-400 flex items-center gap-1.5 justify-center">
           <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-          <span>Ism-familiya, chiziqlar va barcha havolalar 100% to'liq chiqadi!</span>
+          <span>
+            {isObektivka
+              ? "2 ta sahifa, 3x4 surat, mehnat faoliyati va qarindoshlar jadvali 100% to'liq chiqadi!"
+              : "Ism-familiya, chiziqlar va barcha havolalar 100% to'liq chiqadi!"}
+          </span>
         </div>
       </div>
     </div>

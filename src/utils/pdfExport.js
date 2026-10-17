@@ -240,3 +240,194 @@ export function printVectorPdf(elementOrId = 'resume-to-print', fileName = 'Resu
     }
   }, 350);
 }
+
+/**
+ * High-Precision Vector Print for 2-page Ma'lumotnoma (Obektivka)
+ * Supports multi-page A4 document flow with strict page-breaks.
+ */
+export function printObektivkaPdf(elementOrId = 'obektivka-to-print', fileName = 'Malumotnoma') {
+  const element = typeof elementOrId === 'string' 
+    ? document.getElementById(elementOrId) 
+    : elementOrId;
+
+  if (!element) {
+    console.error(`Element ${elementOrId} not found.`);
+    window.print();
+    return;
+  }
+
+  const existingFrame = document.getElementById('proresume-obektivka-print-frame');
+  if (existingFrame) existingFrame.remove();
+
+  const iframe = document.createElement('iframe');
+  iframe.id = 'proresume-obektivka-print-frame';
+  iframe.style.position = 'fixed';
+  iframe.style.top = '-9999px';
+  iframe.style.left = '-9999px';
+  iframe.style.width = '210mm';
+  iframe.style.minHeight = '297mm';
+  iframe.style.border = 'none';
+  iframe.style.zIndex = '-1';
+  document.body.appendChild(iframe);
+
+  const iframeDoc = iframe.contentWindow.document;
+
+  const headStyles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
+    .map((node) => node.outerHTML)
+    .join('\n');
+
+  const safeTitle = `${fileName ? fileName.trim().replace(/\s+/g, '_') : 'Malumotnoma'}_Obektivka`;
+
+  iframeDoc.open();
+  iframeDoc.write(`
+    <!DOCTYPE html>
+    <html lang="uz">
+      <head>
+        <meta charset="UTF-8">
+        <title>${safeTitle}</title>
+        ${headStyles}
+        <style>
+          @page {
+            size: A4 portrait;
+            margin: 0;
+          }
+          *, *::before, *::after {
+            box-sizing: border-box;
+          }
+          html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #ffffff !important;
+            color: #000000 !important;
+            width: 210mm !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            font-family: 'Times New Roman', Times, serif !important;
+          }
+          .resume-paper {
+            width: 210mm !important;
+            min-height: 297mm !important;
+            box-sizing: border-box !important;
+            padding: 12mm 15mm !important;
+            margin: 0 auto !important;
+            box-shadow: none !important;
+            border: none !important;
+            border-radius: 0 !important;
+            transform: none !important;
+            background: #ffffff !important;
+          }
+          table {
+            border-collapse: collapse !important;
+          }
+          td, th {
+            border: 1px solid #000000 !important;
+          }
+        </style>
+      </head>
+      <body>
+        <div style="width: 210mm; margin: 0 auto; background: #ffffff;">
+          ${element.innerHTML}
+        </div>
+      </body>
+    </html>
+  `);
+  iframeDoc.close();
+
+  setTimeout(() => {
+    try {
+      iframe.contentWindow.focus();
+      iframe.contentWindow.print();
+    } catch (e) {
+      console.error('Print iframe error:', e);
+      window.print();
+    } finally {
+      setTimeout(() => {
+        if (iframe.parentNode) {
+          iframe.parentNode.removeChild(iframe);
+        }
+      }, 2500);
+    }
+  }, 350);
+}
+
+/**
+ * Universal High-Resolution Direct PDF Download for 2-Page Ma'lumotnoma (Obektivka)
+ * - Renders each A4 page into high-DPI canvas
+ * - Generates official 2-page A4 PDF file via jsPDF
+ * - 1-click download directly to computer
+ */
+export async function downloadDirectObektivkaPdf(elementOrId = 'obektivka-to-print', fileName = 'Malumotnoma') {
+  const element = typeof elementOrId === 'string' 
+    ? document.getElementById(elementOrId) 
+    : elementOrId;
+
+  if (!element) {
+    throw new Error(`Element ${elementOrId} not found.`);
+  }
+
+  // Parent might have zoom transform
+  const parent = element.parentElement;
+  const originalParentTransform = parent ? parent.style.transform : '';
+  const originalParentTransition = parent ? parent.style.transition : '';
+  const originalTransform = element.style.transform;
+  const originalTransition = element.style.transition;
+  const originalBoxShadow = element.style.boxShadow;
+
+  if (parent) {
+    parent.style.transform = 'none';
+    parent.style.transition = 'none';
+  }
+  element.style.transform = 'none';
+  element.style.transition = 'none';
+  element.style.boxShadow = 'none';
+
+  try {
+    await new Promise((resolve) => setTimeout(resolve, 80));
+
+    // Find all .resume-paper pages
+    const pageElements = Array.from(element.querySelectorAll('.resume-paper'));
+    const targets = pageElements.length > 0 ? pageElements : [element];
+
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4',
+      compress: true,
+    });
+
+    for (let i = 0; i < targets.length; i++) {
+      const pageEl = targets[i];
+      if (i > 0) {
+        pdf.addPage('a4', 'portrait');
+      }
+
+      const dataUrl = await toPng(pageEl, {
+        quality: 0.98,
+        pixelRatio: 2.5,
+        cacheBust: true,
+        backgroundColor: '#ffffff',
+        filter: (node) => {
+          if (node.classList && node.classList.contains('no-print')) {
+            return false;
+          }
+          return true;
+        },
+      });
+
+      pdf.addImage(dataUrl, 'PNG', 0, 0, 210, 297, undefined, 'FAST');
+    }
+
+    const safeName = `${fileName ? fileName.trim().replace(/\s+/g, '_') : 'Malumotnoma'}_Obektivka.pdf`;
+    pdf.save(safeName);
+    return true;
+  } finally {
+    if (parent) {
+      parent.style.transform = originalParentTransform;
+      parent.style.transition = originalParentTransition;
+    }
+    element.style.transform = originalTransform;
+    element.style.transition = originalTransition;
+    element.style.boxShadow = originalBoxShadow;
+  }
+}
+

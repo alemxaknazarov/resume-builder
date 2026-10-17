@@ -1,18 +1,37 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Edit3, Eye, Download } from 'lucide-react';
+import { Edit3, Eye, Download, Printer } from 'lucide-react';
 import Navbar from './components/Navbar';
 import FormPanel from './components/FormPanel';
 import PreviewPanel from './components/PreviewPanel';
 import ExportModal from './components/ExportModal';
+import ObektivkaFormPanel from './components/obektivka/ObektivkaFormPanel';
+import ObektivkaPreviewPanel from './components/obektivka/ObektivkaPreviewPanel';
 import { sampleResumeData, emptyResumeData } from './data/initialData';
-import { printVectorPdf } from './utils/pdfExport';
+import { sampleObektivkaData, emptyObektivkaData } from './data/obektivkaData';
+import { printVectorPdf, printObektivkaPdf } from './utils/pdfExport';
 
-const STORAGE_KEY = 'proresume_builder_data_v1';
+const STORAGE_KEY_RESUME = 'proresume_builder_data_v1';
+const STORAGE_KEY_OBEKTIVKA = 'proresume_obektivka_data_v1';
+const STORAGE_KEY_DOCTYPE = 'proresume_active_doctype';
 
 export default function App() {
+  // Document mode: 'resume' | 'obektivka'
+  const [docType, setDocType] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_DOCTYPE);
+      if (saved === 'resume' || saved === 'obektivka') {
+        return saved;
+      }
+    } catch (e) {
+      console.error('LocalStorage read error:', e);
+    }
+    return 'resume';
+  });
+
+  // Resume data state
   const [resumeData, setResumeData] = useState(() => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
+      const saved = localStorage.getItem(STORAGE_KEY_RESUME);
       if (saved) {
         return JSON.parse(saved);
       }
@@ -22,19 +41,53 @@ export default function App() {
     return sampleResumeData;
   });
 
+  // Obektivka data state
+  const [obektivkaData, setObektivkaData] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_OBEKTIVKA);
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch (e) {
+      console.error('LocalStorage read error:', e);
+    }
+    return sampleObektivkaData;
+  });
+
   const [mobileView, setMobileView] = useState('edit'); // 'edit' | 'preview'
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
-  const resumeRef = useRef(null);
 
-  // Auto-save to localStorage
+  const resumeRef = useRef(null);
+  const obektivkaRef = useRef(null);
+
+  // Persist docType
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(resumeData));
+      localStorage.setItem(STORAGE_KEY_DOCTYPE, docType);
+    } catch (e) {
+      console.error('LocalStorage save error:', e);
+    }
+  }, [docType]);
+
+  // Persist resumeData
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY_RESUME, JSON.stringify(resumeData));
     } catch (e) {
       console.error('LocalStorage save error:', e);
     }
   }, [resumeData]);
 
+  // Persist obektivkaData
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY_OBEKTIVKA, JSON.stringify(obektivkaData));
+    } catch (e) {
+      console.error('LocalStorage save error:', e);
+    }
+  }, [obektivkaData]);
+
+  // Resume handlers
   const handleDataChange = (newData) => {
     setResumeData(newData);
   };
@@ -50,16 +103,34 @@ export default function App() {
     setResumeData(presetData);
   };
 
-  const handleClear = () => {
+  const handleClearResume = () => {
     if (window.confirm("Barcha ma'lumotlarni tozalab, bo'sh rezyumedan boshlamoqchimisiz?")) {
       setResumeData(emptyResumeData);
     }
   };
 
-  // High-precision isolated vector printing
-  const handlePrint = () => {
+  const handlePrintResume = () => {
     if (resumeRef.current) {
       printVectorPdf(resumeRef.current, resumeData.personal?.fullName);
+    }
+  };
+
+  // Obektivka handlers
+  const handleResetObektivka = () => {
+    if (window.confirm("Ma'lumotnoma namunasini qayta tiklamoqchimisiz?")) {
+      setObektivkaData(sampleObektivkaData);
+    }
+  };
+
+  const handleClearObektivka = () => {
+    if (window.confirm("Ma'lumotnoma maydonlarini tozalab, bo'sh shakldan boshlamoqchimisiz?")) {
+      setObektivkaData(emptyObektivkaData);
+    }
+  };
+
+  const handlePrintObektivka = () => {
+    if (obektivkaRef.current) {
+      printObektivkaPdf(obektivkaRef.current, obektivkaData.personal?.fullName);
     }
   };
 
@@ -67,11 +138,14 @@ export default function App() {
     <div className="min-h-screen flex flex-col bg-slate-950 text-slate-100">
       {/* NAVBAR */}
       <Navbar 
+        docType={docType}
+        setDocType={setDocType}
         onSelectPreset={handleSelectPreset}
-        onClear={handleClear}
+        onClear={handleClearResume}
         onExport={() => setIsExportModalOpen(true)}
-        mobileView={mobileView}
-        setMobileView={setMobileView}
+        onResetObektivka={handleResetObektivka}
+        onClearObektivka={handleClearObektivka}
+        onPrintObektivka={handlePrintObektivka}
       />
 
       {/* MAIN WORKSPACE: SPLIT-SCREEN */}
@@ -84,16 +158,26 @@ export default function App() {
         >
           <div className="mb-2.5 sm:mb-3 px-1">
             <h2 className="text-xs sm:text-sm font-bold text-white tracking-wide uppercase text-slate-400">
-              Ma'lumotlarni Kiritish
+              {docType === 'resume' ? "Ma'lumotlarni Kiritish" : "Маълумотнома (Объективка) анкетаси"}
             </h2>
             <p className="text-[11px] sm:text-xs text-slate-400">
-              Quyidagi bo'limlarni to'ldiring, o'ng tomonda rezyume real vaqtda yangilanadi.
+              {docType === 'resume' 
+                ? "Quyidagi bo'limlarni to'ldiring, o'ng tomonda rezyume real vaqtda yangilanadi."
+                : "Ўзбекистон Республикаси давлат органлари ва ташкилотлари учун 2 саҳифали расмий шакл."}
             </p>
           </div>
-          <FormPanel 
-            data={resumeData} 
-            onChange={handleDataChange} 
-          />
+
+          {docType === 'resume' ? (
+            <FormPanel 
+              data={resumeData} 
+              onChange={handleDataChange} 
+            />
+          ) : (
+            <ObektivkaFormPanel 
+              data={obektivkaData}
+              onChange={setObektivkaData}
+            />
+          )}
         </section>
 
         {/* RIGHT COLUMN: LIVE A4 PREVIEW */}
@@ -102,11 +186,19 @@ export default function App() {
             mobileView === 'preview' ? 'block' : 'hidden lg:block'
           }`}
         >
-          <PreviewPanel 
-            data={resumeData} 
-            onCustomizationChange={handleCustomizationChange} 
-            resumeRef={resumeRef}
-          />
+          {docType === 'resume' ? (
+            <PreviewPanel 
+              data={resumeData} 
+              onCustomizationChange={handleCustomizationChange} 
+              resumeRef={resumeRef}
+            />
+          ) : (
+            <ObektivkaPreviewPanel 
+              data={obektivkaData}
+              obektivkaRef={obektivkaRef}
+              onExport={() => setIsExportModalOpen(true)}
+            />
+          )}
         </section>
       </main>
 
@@ -150,13 +242,14 @@ export default function App() {
         </button>
       </nav>
 
-      {/* PDF EXPORT MODAL */}
+      {/* PDF EXPORT MODAL (UNIFIED FOR RESUME & OBEKTIVKA) */}
       <ExportModal 
         isOpen={isExportModalOpen} 
         onClose={() => setIsExportModalOpen(false)} 
-        fullName={resumeData.personal?.fullName}
-        onPrint={handlePrint}
+        docType={docType}
+        fullName={docType === 'resume' ? resumeData.personal?.fullName : obektivkaData.personal?.fullName}
         resumeRef={resumeRef}
+        obektivkaRef={obektivkaRef}
       />
     </div>
   );
