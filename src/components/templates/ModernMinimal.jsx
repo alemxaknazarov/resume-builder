@@ -115,8 +115,8 @@ export default function ModernMinimal({ data }) {
           <div className="space-y-4">
             {experience.map((exp) => (
               <div key={exp.id} className="avoid-break">
-                <div className="flex justify-between items-baseline flex-wrap">
-                  <div className="font-semibold text-sm text-slate-900">
+                <div className="flex justify-between items-start gap-2 mb-0.5">
+                  <div className="font-semibold text-sm text-slate-900 flex-1">
                     {exp.role} 
                     <span className="text-slate-400 font-normal"> — </span>
                     {exp.companyUrl ? (
@@ -134,7 +134,7 @@ export default function ModernMinimal({ data }) {
                       <span className="text-slate-700 font-medium">{exp.company}</span>
                     )}
                   </div>
-                  <span className="text-[11px] text-slate-500 font-medium">
+                  <span className="text-[11px] text-slate-500 font-medium shrink-0 text-right">
                     {exp.startDate} - {exp.current ? 'Hozir' : exp.endDate} {exp.location && `| ${exp.location}`}
                   </span>
                 </div>
