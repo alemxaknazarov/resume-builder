@@ -1,8 +1,63 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   User, Briefcase, GraduationCap, FolderGit2, Wrench, Languages, 
   ChevronDown, ChevronUp, Plus, Trash2, Link as LinkIcon, Sparkles, ExternalLink
 } from 'lucide-react';
+
+function SkillCategoryInput({ label, placeholder, value = [], onChange }) {
+  const [text, setText] = useState(() => (Array.isArray(value) ? value.join(', ') : ''));
+  const isInternalChange = useRef(false);
+
+  useEffect(() => {
+    if (isInternalChange.current) {
+      isInternalChange.current = false;
+      return;
+    }
+    const currentItemsStr = text
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .join(', ');
+    const incomingItemsStr = Array.isArray(value) ? value.join(', ') : '';
+
+    if (currentItemsStr !== incomingItemsStr) {
+      setText(incomingItemsStr);
+    }
+  }, [value]);
+
+  const handleChange = (e) => {
+    const newText = e.target.value;
+    isInternalChange.current = true;
+    setText(newText);
+    const items = newText
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+    onChange(items);
+  };
+
+  const handleBlur = () => {
+    const items = text
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+    setText(items.join(', '));
+  };
+
+  return (
+    <div>
+      <label className="block text-xs font-medium text-slate-300 mb-1">{label}</label>
+      <input
+        type="text"
+        placeholder={placeholder}
+        value={text}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        className="w-full bg-slate-900/90 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500 font-mono text-xs"
+      />
+    </div>
+  );
+}
 
 export default function FormPanel({ data, onChange }) {
   const [openSections, setOpenSections] = useState({
@@ -198,13 +253,12 @@ export default function FormPanel({ data, onChange }) {
     });
   };
 
-  // Skills handlers (tags split by comma)
-  const handleSkillsChange = (category, value) => {
-    const items = value.split(',').map(s => s.trim()).filter(Boolean);
+  // Skills handlers
+  const handleSkillsChange = (category, items) => {
     onChange({
       ...data,
       skills: {
-        ...data.skills,
+        ...(data.skills || {}),
         [category]: items
       }
     });
@@ -639,36 +693,24 @@ export default function FormPanel({ data, onChange }) {
             <p className="text-xs text-slate-400 pt-3">
               Ko'nikmalarni vergul bilan ajratib yozing (masalan: <code className="text-amber-300 font-mono">React, TypeScript, Next.js</code>)
             </p>
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Frontend</label>
-              <input
-                type="text"
-                placeholder="React, Next.js, TypeScript, Tailwind CSS, Redux"
-                value={data.skills.frontend?.join(', ') || ''}
-                onChange={(e) => handleSkillsChange('frontend', e.target.value)}
-                className="w-full bg-slate-900/90 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500 font-mono text-xs"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Backend & Ma'lumotlar Bazasi</label>
-              <input
-                type="text"
-                placeholder="Node.js, PostgreSQL, Redis, REST API, Prisma"
-                value={data.skills.backend?.join(', ') || ''}
-                onChange={(e) => handleSkillsChange('backend', e.target.value)}
-                className="w-full bg-slate-900/90 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500 font-mono text-xs"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">DevOps, Asboblar & Boshqa</label>
-              <input
-                type="text"
-                placeholder="Docker, Git, CI/CD, Linux, Figma, Vite"
-                value={data.skills.devopsAndTools?.join(', ') || ''}
-                onChange={(e) => handleSkillsChange('devopsAndTools', e.target.value)}
-                className="w-full bg-slate-900/90 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500 font-mono text-xs"
-              />
-            </div>
+            <SkillCategoryInput
+              label="Frontend"
+              placeholder="React, Next.js, TypeScript, Tailwind CSS, Redux"
+              value={data.skills?.frontend}
+              onChange={(items) => handleSkillsChange('frontend', items)}
+            />
+            <SkillCategoryInput
+              label="Backend & Ma'lumotlar Bazasi"
+              placeholder="Node.js, PostgreSQL, Redis, REST API, Prisma"
+              value={data.skills?.backend}
+              onChange={(items) => handleSkillsChange('backend', items)}
+            />
+            <SkillCategoryInput
+              label="DevOps, Asboblar & Boshqa"
+              placeholder="Docker, Git, CI/CD, Linux, Figma, Vite"
+              value={data.skills?.devopsAndTools}
+              onChange={(items) => handleSkillsChange('devopsAndTools', items)}
+            />
           </div>
         )}
       </div>
